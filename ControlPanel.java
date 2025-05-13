@@ -13,7 +13,6 @@ public class ControlPanel extends JPanel {
 
         setLayout(new BorderLayout());
 
-        // 式式式 Button to throw Yut 式式式
         JButton throwButton = new JButton("Throw Yut");
         throwButton.addActionListener(e -> {
             if (manager.getPhase() != GameManager.Phase.WAITING_FOR_THROW) {
@@ -31,11 +30,9 @@ public class ControlPanel extends JPanel {
         actionPanel.setBorder(BorderFactory.createTitledBorder("Actions"));
         actionPanel.add(throwButton);
 
-        // 式式式 List of Yut throws to apply 式式式
         throwListPanel = new JPanel(new GridLayout(0, 1));
         throwListPanel.setBorder(BorderFactory.createTitledBorder("Available Throws"));
 
-        // 式式式 Final layout 式式式
         add(actionPanel, BorderLayout.NORTH);
         add(throwListPanel, BorderLayout.CENTER);
     }
