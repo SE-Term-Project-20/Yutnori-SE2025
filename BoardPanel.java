@@ -47,7 +47,8 @@ public class BoardPanel extends JPanel implements GameListener{
     private void assignCoordinates(BoardType type) {
         List<BoardNode> allNodes = layout.buildNodes();
         int cx = 250, cy = 250, radius = 150;
-        // confirm basis. not sure if coordinates are correct. fuck
+        // confirm basis. not sure if coordinates are correct.
+        // node connection order redefined in each layout class.
 //        Collections.addAll(nodes, start, n00, n01, n02, n03, 
 //		           f0, n10, n11, n12, n13, 
 //		           f1, n20, n21, n22, n23, 
