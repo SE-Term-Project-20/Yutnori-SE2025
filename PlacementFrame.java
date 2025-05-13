@@ -15,6 +15,7 @@ public class PlacementFrame extends JFrame {
         add(titleLabel, BorderLayout.NORTH);
 
         DefaultListModel<String> listModel = new DefaultListModel<>();
+        // current version terminates the game as soon as a winner is born, below logic doesn't hold.
         int rank = 1;
         for (String player : playerRanking) {
             listModel.addElement(rank + ". " + player);
