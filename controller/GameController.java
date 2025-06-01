@@ -1,38 +1,60 @@
 package controller;
-import model.*;
-import model.GameManager.Phase;
-import ui.*;
+
+import model.BoardType;
+import model.GameListener;
+import model.GameManager;
+import model.GameModel;
+import model.GameOverEvent;
+import model.GameStartedEvent;
+import model.Piece;
+import model.PieceCapturedEvent;
+import model.PieceMovedEvent;
+import model.Player;
+import model.StackFormedEvent;
+import model.TurnChangedEvent;
+import model.Yut;
+import model.YutResult;
+import model.YutThrownEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.JFrame;
-
-
 public class GameController {
-	// Always present
-	private GameModel  model;
-	private GameManager manager;
-	private List<Player> players;
-	private JFrame activeFrame; 
-	
-	public void startGame(BoardType type, int playerCnt, int pieceCnt) { 
-		this.players = new ArrayList<>();
+    // Always present
+    private GameModel model;
+    private GameManager manager;
+    private List<Player> players;
+    private ViewChanger viewChanger; // to request UI transition. 
+
+    public GameController(ViewChanger viewChanger) {
+        this.viewChanger = viewChanger;
+
+    }
+
+    public void initializeAndShowSettings() {
+        if (viewChanger != null) {
+            viewChanger.showLandingScreen();
+        }
+    }
+
+    public void startGame(BoardType type, int playerCnt, int pieceCnt) {
+        this.players = new ArrayList<>();
         for (int i = 1; i <= playerCnt; i++) {
-            players.add(new Player("Player " + i, pieceCnt));  
-        }  
-        model   = new GameModel(type, players);
+            players.add(new Player("Player " + i, pieceCnt));
+        }
+        model = new GameModel(type, players, pieceCnt);
         manager = new GameManager(model);
-        
+
         model.addGameListener(new GameListener() {
             @Override
             public void gameEnded(GameOverEvent e) {
-                showPlacementBoard();
+                if (viewChanger != null) {
+                    viewChanger.showPlacementScreen(); 
+                }
             }
 
-            /* empty stubs for the rest */
             @Override public void gameStarted(GameStartedEvent e) {}
             @Override public void turnChanged(TurnChangedEvent e) {}
             @Override public void pieceMoved(PieceMovedEvent e) {}
@@ -40,67 +62,116 @@ public class GameController {
             @Override public void stackFormed(StackFormedEvent e) {}
             @Override public void yutThrown(YutThrownEvent e) {}
         });
-        disposeActiveFrame();
-        activeFrame = new GameFrame(this); 
-    }
-	
-	private void disposeActiveFrame() {
-	    if (activeFrame != null) activeFrame.dispose();
-	}
-	
-	public void showLanding() { 
-		activeFrame = new LandingFrame(this); 
-	}
-	
-	public void showSettings() {
-		disposeActiveFrame();                     // close whatever is open
-		activeFrame = new SettingFrame(this);     // open settings
-	}
-	
-	private void showPlacementBoard() {
-	    disposeActiveFrame();                       // close GameFrame
-	    activeFrame = new PlacementFrame(this);   // new window
-	}
 
-	public void onThrowYutClicked() {
-	    if (manager.getPhase() != GameManager.Phase.WAITING_FOR_THROW) {
-	        model.fireLog("Use all pending throws first.");
-	        return;
-	    }
-	    YutResult result = Yut.throwRandom();          // random roll
-	    manager.addYutResult(result);                  // store in manager
-	    model.yutThrown(new YutThrownEvent(model.currentPlayer(), result));
-	}
+        if (viewChanger != null) {
+            viewChanger.showGameScreen();
+        }
+    }
+
+    public void requestLandingScreenDisplay() {
+        if (viewChanger != null) {
+            viewChanger.showLandingScreen();
+        }
+    }
+
+//    public void requestSettingsScreenDisplay() {
+//        if (viewChanger != null) {
+//            viewChanger.showSettingsScreen();
+//        }
+//    }
+    public void requestSettingsScreenDisplay() {
+        if (viewChanger != null) {
+            viewChanger.showSettingsScreen();
+        } else {
+            System.err.println("GameController: viewChanger is NULL when requesting settings screen!");
+        }
+
+    }
+
+    public void requestPlacementScreenDisplay() {
+        if (viewChanger != null) {
+            viewChanger.showPlacementScreen();
+        }
+    }
+
+    public void requestGameScreenDisplay() {
+        if (viewChanger != null) {
+            viewChanger.showGameScreen();
+        }
+    }
+
+
+    public void onThrowYutClicked() {
+        if (manager == null) {
+            model.fireLog("Game not started yet."); 
+            return;
+        }
+        if (manager.getPhase() != GameManager.Phase.WAITING_FOR_THROW) {
+            model.fireLog("Use all pending throws first.");
+            return;
+        }
+        YutResult result = Yut.throwRandom(); 
+        manager.addYutResult(result); 
+        model.yutThrown(new YutThrownEvent(model.currentPlayer(), result));
+    }
 
     public void onYutResultSelected(YutResult r) {
+        if (manager == null) return;
         try {
-            manager.applyThrow(r);    // moves selected piece inside
+            manager.applyThrow(r);
         } catch (Exception ex) {
             model.fireLog(ex.getMessage());
         }
     }
-    
+
     public void onPieceSelected(Piece piece) {
-        if (piece == null) return;
+        if (manager == null || model == null || piece == null) return;
         if (piece.owner() != model.currentPlayer()) {
             model.fireLog("Not your piece!");
             return;
         }
-        manager.selectPiece(piece);   // store selection
-    }
-    
-    public void resetGame() {
-        model.fireLog("Restarting – choose settings again.");
-        showSettings();            // simply reopen the SettingFrame
+        manager.selectPiece(piece); 
     }
 
-    public void exitGame() { System.exit(0); }
-    public List<YutResult> getAvailableThrows(){ return manager.getAvailableThrows(); }
-    public List<Player> getPlayers() { return players; }
-    public GameModel getModel() { return model; }
-    public Piece getSelecetedPiece() { return manager.getSelectedPiece(); }
+    public void resetGame() {
+        model.fireLog("Restarting – choose settings again.");
+        if (viewChanger != null) {
+            viewChanger.showSettingsScreen(); // resetting simply calls setting screen to configure a new game. setting-game-placement follows on.
+        }
+    }
+
+    public void exitGame() {
+        System.exit(0); 
+    }
+
+    public List<YutResult> getAvailableThrows() {
+        return manager != null ? manager.getAvailableThrows() : List.of();
+    }
+
+    public List<Player> getPlayers() {
+        return players != null ? players : List.of();
+    }
+
+    public GameModel getModel() {
+        return model;
+    }
+
+    public Piece getSelectedPiece() { 
+        return manager != null ? manager.getSelectedPiece() : null;
+    }
+
     public List<Player> getStandings() {
-        return players.stream().sorted(Comparator.comparingInt(Player::score).reversed())                   // highest first
+        if (players == null) return List.of();
+        return players.stream().sorted(Comparator.comparingInt(Player::score).reversed())
                       .collect(Collectors.toUnmodifiableList());
     }
+
+    public GameManager.Phase getCurrentPhase() {
+        return manager != null ? manager.getPhase() : null; 
+    }
+
+    public void setViewChanger(ViewChanger viewChanger) {
+        this.viewChanger = viewChanger;
+    }
+
 }

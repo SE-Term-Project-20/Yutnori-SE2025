@@ -2,17 +2,19 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import ui.MessagePanel;
+import ui.swing.MessagePanel;
 
 public class GameModel {
     private final List<Player> players;
     private final Board board;
+    private final int pieceCnt;
     private final List<GameListener> listeners = new ArrayList<>();
     private int currentPlayerIndex = 0;
 
-    public GameModel(BoardType type, List<Player> players) {
+    public GameModel(BoardType type, List<Player> players, int pieceCnt) {
         this.players = players;
         this.board = new Board(type);
+        this.pieceCnt = pieceCnt;
     }
 
     public void addGameListener(GameListener l) { listeners.add(l); }
@@ -23,6 +25,10 @@ public class GameModel {
 
     public Player currentPlayer() {
         return players.get(currentPlayerIndex);
+    }
+    
+    public int getPieceCnt() {
+    	return this.pieceCnt;
     }
 
     public void nextTurn() {

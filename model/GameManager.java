@@ -67,6 +67,7 @@ public class GameManager{
 
         model.fireLog("Used: " + result + "  |  Remaining: " + availableThrows.size());
 
+        // currentPhase being waiting for throw implies extra throw granted from capturing opponent's piece
         if (availableThrows.isEmpty() && currentPhase != Phase.WAITING_FOR_THROW) {
             currentPhase = Phase.WAITING_FOR_THROW;
             model.nextTurn();
@@ -141,7 +142,7 @@ public class GameManager{
     }
 
     private void landPiece(Piece p, BoardNode node) {
-        if (node == null) {p.isFinished(); p.leaveBoard(); model.currentPlayer().active().remove(p); 
+        if (node == null) {p.isFinished(); p.leaveBoard(); model.currentPlayer().active().remove(p); p.owner().incScore(); 
             p.owner().incrementFinishedPieces();
             if (p.owner().hasFinishedAllPieces()) {
             	model.fireGameOver(new GameOverEvent(p.owner()));

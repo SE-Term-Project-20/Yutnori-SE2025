@@ -1,4 +1,4 @@
-package ui;
+package ui.swing;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -120,7 +120,7 @@ public class BoardPanel extends JPanel implements GameListener{
         	        }
         	    }
 
-        	    // 1 center node
+        	    // 1 centre node
         	    coordinates.put(allNodes.get(i), new Point(cx, cy));
         } else {
             int outerSize = 30;
@@ -240,7 +240,7 @@ public class BoardPanel extends JPanel implements GameListener{
                 g2d.setColor(Color.BLACK);
                 g2d.drawOval(x, y, pieceSize, pieceSize);
                 
-                if (piece.equals(controller.getSelecetedPiece())) {
+                if (piece.equals(controller.getSelectedPiece())) {
                     g2d.setColor(Color.RED);
                     g2d.setStroke(new BasicStroke(2));
                     g2d.drawOval(r.x - 2, r.y - 2, r.width + 4, r.height + 4);
@@ -278,7 +278,7 @@ public class BoardPanel extends JPanel implements GameListener{
         	    g2d.drawOval(x, y, size, size);
 
         	    //  highlight if selected
-        	    if (piece.equals(controller.getSelecetedPiece())) {
+        	    if (piece.equals(controller.getSelectedPiece())) {
         	        g2d.setColor(Color.RED);
         	        g2d.setStroke(new BasicStroke(2));
         	        g2d.drawOval(x - 2, y - 2, size + 4, size + 4);

@@ -1,5 +1,5 @@
 // SettingFrame.java
-package ui;
+package ui.swing;
 import model.*;
 import javax.swing.*;
 import controller.GameController;
@@ -43,7 +43,7 @@ public class SettingFrame extends JFrame{
             int pieces    = (Integer) pieceSpinner.getValue();
 
             controller.startGame(type, players, pieces);
-            dispose();                          // close settings window
+            dispose();                        
         });     
         
         

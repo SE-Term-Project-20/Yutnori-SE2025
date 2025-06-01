@@ -1,5 +1,5 @@
 // PlacementFrame.java
-package ui;
+package ui.swing;
 
 import javax.swing.*;
 
