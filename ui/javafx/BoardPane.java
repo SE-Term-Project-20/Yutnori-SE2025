@@ -73,7 +73,6 @@ public class BoardPane extends TitledPane implements GameListener {
         });
 
         // Register as a listener to game events for repainting. red contour on selected piece  drawn
-        this.model.addGameListener(this);
 
         reDraw(); // Initial drawing 
         
@@ -196,7 +195,9 @@ public class BoardPane extends TitledPane implements GameListener {
         }
 
         clickablePieces.clear();
+        System.out.println("BoardPane: reDraw() called. Checking piece positions:");
         drawPlayerPieces(gc);
+        System.out.println("drawPlayerpicees(gc) called");
     }
 
     private void drawPlayerPieces(GraphicsContext gc) {
@@ -261,8 +262,10 @@ public class BoardPane extends TitledPane implements GameListener {
         }
 
         // Active pieces on board nodes
+        System.out.println("BoardPane: reDraw() called. Checking piece positions:");
         for (Player player : players) {
             for (Piece piece : player.active()) {
+            	System.out.println("Player " + player.id() + ", Piece at " + piece.position());
                 BoardNode pos = piece.position();
                 if (pos == null) continue;
 
@@ -301,6 +304,24 @@ public class BoardPane extends TitledPane implements GameListener {
     // GameListener methods
     @Override
     public void pieceMoved(PieceMovedEvent e) { reDraw(); }
+//    @Override
+//    public void pieceMoved(PieceMovedEvent e) {
+//        Platform.runLater(() -> {
+//            System.out.println("BoardPane: pieceMoved event received. Player: " + e.player().id() + ", To: " + e.to());
+//            // Check model state HERE, INSIDE Platform.runLater, right before reDraw
+//            System.out.println("BoardPane (in runLater): Checking piece positions BEFORE reDraw:");
+//            if (controller != null && controller.getPlayers() != null) { // Add null checks
+//                for (Player player : controller.getPlayers()) {
+//                    for (Piece piece : player.active()) {
+//                        // Pay special attention to the piece involved in the event e.pieces()
+//                        System.out.println("  Player " + player.id() + ", Piece " + piece.id() + " at " + piece.position());
+//                    }
+//                }
+//            }
+//            reDraw();
+//            System.out.println("BoardPane: reDraw() called after pieceMoved (from FX thread).");
+//        });
+//    }
     @Override
     public void pieceCaptured(PieceCapturedEvent e) { reDraw(); }
     @Override

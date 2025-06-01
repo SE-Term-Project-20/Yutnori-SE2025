@@ -24,6 +24,7 @@ public class Main {
             System.out.println("No UI specified. Defaulting to Swing.");
             System.out.println("Tip: Run with 'javafx' or 'swing' argument to choose UI (e.g., java app.Main javafx).");
         }
+        
 
         System.out.println("Launching with " + uiChoice.toUpperCase() + " UI...");
 

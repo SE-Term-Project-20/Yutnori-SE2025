@@ -88,7 +88,9 @@ public class GameManager{
         List<Piece> movers = pickMovers(clicked);
         movers.forEach(p -> from.getPiecesOnNode().remove(p));
         BoardNode dest = traverse(from, steps);
+        System.out.println("GameManager : before firePieceMoved"); // Add more detail
         model.firePieceMoved(new PieceMovedEvent(clicked.owner(), movers, from, dest));
+        System.out.println("GameManager : after firePieceMoved");
         movers.forEach(p -> landPiece(p, dest));
 
     }
