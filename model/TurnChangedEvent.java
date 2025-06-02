@@ -1,5 +1,5 @@
 package model;
 
-public record TurnChangedEvent(Player next) {
+public record TurnChangedEvent() {
 
 }

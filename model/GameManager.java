@@ -20,9 +20,14 @@ public class GameManager{
     }
 
     public void selectPiece(Piece p) {
-        if (currentPhase != Phase.WAITING_FOR_PIECE_SELECTION)
-            throw new IllegalStateException("Must throw yut first.");
-        if (p.owner() != model.currentPlayer()) throw new IllegalStateException("Not your turn!");
+        if (currentPhase != Phase.WAITING_FOR_PIECE_SELECTION) {
+//            throw new IllegalStateException("Must throw yut first.");
+            return;
+        }
+        if (p.owner() != model.currentPlayer()) { 
+//        	throw new IllegalStateException("Not your turn!");
+            return;
+        }
         selected = p;
     }
     
@@ -32,7 +37,7 @@ public class GameManager{
         if(result == YutResult.BACKDO && model.currentPlayer().active().size() == 0 && availableThrows.size() == 1) {
         	model.fireLog("Can't use back-do");
         	availableThrows.clear();
-        	model.nextTurn();
+        	model.turnChanged(new TurnChangedEvent());
         	return;
         }
         // stay in THROWING phase if YUT or MO
@@ -44,19 +49,13 @@ public class GameManager{
         }
     }
 
-    public void useYutResult(YutResult result) {
-        if (!availableThrows.contains(result)) throw new IllegalStateException("Invalid Yut selection");
-        applyThrow(result);
-        availableThrows.remove(result);
-    }
-
     public List<YutResult> getAvailableThrows() {
         return List.copyOf(availableThrows);
     }
 
     public void applyThrow(YutResult result) {
     	if (result == YutResult.BACKDO && !selected.isOnBoard()) {
-            throw new IllegalStateException("Back-Do can only be applied to a piece already on the board.");
+            throw new IllegalStateException("BACK-DO can only be applied to a piece already on the board.");
         }
         if (selected == null) throw new IllegalStateException("No piece selected.");
         if (!availableThrows.contains(result)) throw new IllegalStateException("Invalid YutResult.");
@@ -70,8 +69,13 @@ public class GameManager{
         // currentPhase being waiting for throw implies extra throw granted from capturing opponent's piece
         if (availableThrows.isEmpty() && currentPhase != Phase.WAITING_FOR_THROW) {
             currentPhase = Phase.WAITING_FOR_THROW;
-            model.nextTurn();
-            model.fireLog("Turn passed to " + model.currentPlayer().id());
+            model.turnChanged(new TurnChangedEvent());
+        } 
+        if (!availableThrows.isEmpty() && availableThrows.stream().allMatch(y -> y == YutResult.BACKDO) && model.currentPlayer().active().size() == 0) {
+            currentPhase = Phase.WAITING_FOR_THROW;
+            model.fireLog("No piece available to apply BACK-DO");
+            availableThrows.clear();
+            model.turnChanged(new TurnChangedEvent());
         } 
     }
 
@@ -88,9 +92,9 @@ public class GameManager{
         List<Piece> movers = pickMovers(clicked);
         movers.forEach(p -> from.getPiecesOnNode().remove(p));
         BoardNode dest = traverse(from, steps);
-        System.out.println("GameManager : before firePieceMoved"); // Add more detail
+       
         model.firePieceMoved(new PieceMovedEvent(clicked.owner(), movers, from, dest));
-        System.out.println("GameManager : after firePieceMoved");
+        
         movers.forEach(p -> landPiece(p, dest));
 
     }

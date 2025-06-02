@@ -38,7 +38,8 @@ public class SettingView {
         Label pieceLabel = new Label("Number of Pieces (2-6):"); 
         pieceSpinner = new Spinner<>();
 
-        SpinnerValueFactory.IntegerSpinnerValueFactory valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,1,1,1);
+        SpinnerValueFactory.IntegerSpinnerValueFactory valueFactory 
+        = new SpinnerValueFactory.IntegerSpinnerValueFactory(2,5,4,1);
         
 
 

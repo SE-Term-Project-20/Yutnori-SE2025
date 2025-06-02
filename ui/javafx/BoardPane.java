@@ -1,4 +1,5 @@
 package ui.javafx;
+import javafx.application.Platform;
 
 import controller.GameController; // Import GameController
 import model.BoardLayout;
@@ -65,7 +66,9 @@ public class BoardPane extends TitledPane implements GameListener {
                 for (Map.Entry<Rectangle, Piece> entry : clickablePieces.entrySet()) {
                     if (entry.getKey().contains(clickX, clickY)) {
                         controller.onPieceSelected(entry.getValue());
-                        reDraw(); 
+                        Platform.runLater(() -> {
+                            reDraw();
+                        });
                         break;
                     }
                 }
@@ -74,14 +77,16 @@ public class BoardPane extends TitledPane implements GameListener {
 
         // Register as a listener to game events for repainting. red contour on selected piece  drawn
 
-        reDraw(); // Initial drawing 
+        Platform.runLater(() -> {
+            reDraw();
+        }); // Initial drawing 
         
     }
 
     private void assignCoordinates(BoardType type) {
         List<BoardNode> allNodes = layout.buildNodes();
-        int cx = 350; // centre x of the canvas
-        int cy = 250; // centre y of the canvas
+        int cx = 250; // centre x of the canvas for pentagon, hexagon
+        int cy = 250; // centre y of the canvas for pentagon, hexagon
         int radius = Math.min(cx, cy) - 50; 
 
         if (type == BoardType.SQUARE) {
@@ -195,23 +200,21 @@ public class BoardPane extends TitledPane implements GameListener {
         }
 
         clickablePieces.clear();
-        System.out.println("BoardPane: reDraw() called. Checking piece positions:");
         drawPlayerPieces(gc);
-        System.out.println("drawPlayerpicees(gc) called");
     }
 
     private void drawPlayerPieces(GraphicsContext gc) {
         int pieceSize = 20; // size of pieces in the reserve area
         int activePieceSize = 16; // size of pieces on the board
         int spacing = 5;    // Spacing for reserve pieces
-        int playerAreaSpacing = 150; // horizontal space between player areas
-        int playerAreaVerticalSpacing = 100; // vertical space between player rows
+        int playerAreaSpacing = 120; // horizontal space between player areas
+        int playerAreaVerticalSpacing = 150; // vertical space between player rows
         int labelOffset = 20; // player id offset.
 
 
         Color[] playerColorsFx = { Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.CYAN };
 
-
+        
         List<Player> players = controller.getPlayers();
         if (players == null || players.isEmpty()) return;
 
@@ -262,10 +265,8 @@ public class BoardPane extends TitledPane implements GameListener {
         }
 
         // Active pieces on board nodes
-        System.out.println("BoardPane: reDraw() called. Checking piece positions:");
         for (Player player : players) {
             for (Piece piece : player.active()) {
-            	System.out.println("Player " + player.id() + ", Piece at " + piece.position());
                 BoardNode pos = piece.position();
                 if (pos == null) continue;
 
@@ -303,7 +304,9 @@ public class BoardPane extends TitledPane implements GameListener {
 
     // GameListener methods
     @Override
-    public void pieceMoved(PieceMovedEvent e) { reDraw(); }
+    public void pieceMoved(PieceMovedEvent e) { Platform.runLater(() -> {
+        reDraw();
+    }); }
 //    @Override
 //    public void pieceMoved(PieceMovedEvent e) {
 //        Platform.runLater(() -> {
@@ -323,9 +326,13 @@ public class BoardPane extends TitledPane implements GameListener {
 //        });
 //    }
     @Override
-    public void pieceCaptured(PieceCapturedEvent e) { reDraw(); }
+    public void pieceCaptured(PieceCapturedEvent e) { Platform.runLater(() -> {
+        reDraw();
+    }); }
     @Override
-    public void stackFormed(StackFormedEvent e) { reDraw(); }
+    public void stackFormed(StackFormedEvent e) { Platform.runLater(() -> {
+        reDraw();
+    }); }
 
     // Add other GameListener stubs if your GameListener interface has more methods
     // (based on your Swing BoardPanel, it seems these three are the main ones triggering repaint)
@@ -334,3 +341,4 @@ public class BoardPane extends TitledPane implements GameListener {
 //    @Override public void turnChanged(TurnChangedEvent e) { reDraw(); } // Example
 //    @Override public void yutThrown(YutThrownEvent e) { reDraw(); } // Example
 }
+

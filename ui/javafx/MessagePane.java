@@ -15,9 +15,10 @@ import model.YutThrownEvent;
 
 public class MessagePane extends VBox implements GameListener {
     private TextArea logArea;
-
+    private GameModel model;
 
     public MessagePane(GameModel model) {
+    	this.model = model;
         this.logArea = new TextArea();
         logArea.setPrefRowCount(6);
         logArea.setPrefColumnCount(80); 
@@ -44,7 +45,7 @@ public class MessagePane extends VBox implements GameListener {
 
     @Override
     public void turnChanged(TurnChangedEvent e) {
-        logArea.appendText("Turn changed: " + e.next().id() + "\n");
+        logArea.appendText("Turn passed to : " + this.model.currentPlayer().id() + "\n");
     }
 
     @Override

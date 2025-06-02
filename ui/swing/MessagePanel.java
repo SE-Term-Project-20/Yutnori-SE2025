@@ -30,7 +30,7 @@ public class MessagePanel extends JPanel implements GameListener{
     
     @Override
     public void turnChanged(TurnChangedEvent e) {
-    	logArea.append("Turn changed : " + e.next());
+        logArea.append("Turn passed to : " + this.model.currentPlayer().id() + "\n");
     }
     
     @Override

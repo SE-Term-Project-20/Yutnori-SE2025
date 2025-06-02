@@ -18,7 +18,7 @@ public class JavaFXApp extends Application {
         // 3. Give the JavaFXViewChanger a reference to the GameController
         javafxViewChanger.setController(gameController);
 
-        // 4. tell the GameController to show the initial screen for the JavaFX UI
+        // 4. tell the GameController to show the initial screen for the JavaFX UI, nowhere else should be calling this line.
         gameController.requestLandingScreenDisplay(); 
     }   
 }

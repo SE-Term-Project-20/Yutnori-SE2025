@@ -33,7 +33,7 @@ public class PlacementView {
         List<Player> standings = controller.getStandings();
         String rankingText = "Placements:\n";
         for (int i = 0; i < standings.size(); i++ ) {
-        	rankingText += i + standings.get(i).id();
+        	rankingText += i + 1 + ". " + standings.get(i).id() + "\n";
         }
         Label rankingLabel = new Label(rankingText);
         rankingLabel.setStyle("-fx-font-size: 16px;");

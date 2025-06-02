@@ -31,8 +31,9 @@ public class GameModel {
     	return this.pieceCnt;
     }
 
-    public void nextTurn() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    public void turnChanged(TurnChangedEvent e) {
+    	currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    	listeners.forEach(l -> l.turnChanged(e));
     }
 
     public void firePieceMoved(PieceMovedEvent e) {
@@ -52,25 +53,15 @@ public class GameModel {
     }
 
     public void yutThrown(YutThrownEvent e) {
-    	for (GameListener l : listeners) {
-    		if (l instanceof MessagePanel) {
-    			l.yutThrown(e);
-    		}
-    	}
+    	listeners.forEach(l -> l.yutThrown(e));
     }
     
     public void fireLog(String message) {
-        for (GameListener l : listeners) {
-            if (l instanceof MessagePanel m) {
-                m.log(message);
-            }
-        }
+    	listeners.forEach(l -> l.log(message));
     }
     
     public void fireGameOver(GameOverEvent e) {
-        for (GameListener l : listeners) {
-            l.gameEnded(e);
-        }
+    	listeners.forEach(l -> l.gameEnded(e));
     }
 
 }
